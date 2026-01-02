@@ -1,0 +1,39 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum ProteinType {
+  BEEF
+  FISH
+  CHICKEN
+  TOFU
+  PLANT_BASED
+  OTHER
+}
+
+model MealPlan {
+  id        String           @id @default(cuid())
+  createdAt DateTime         @default(now())
+  startDate DateTime
+  dinners   MealPlanDinner[]
+}
+
+model MealPlanDinner {
+  id          String      @id @default(cuid())
+  mealPlanId  String
+  date        DateTime
+  recipeUri   String
+  proteinType ProteinType
+  servings    Int         @default(4)
+
+  mealPlan    MealPlan    @relation(fields: [mealPlanId], references: [id], onDelete: Cascade)
+
+  @@index([mealPlanId])
+  @@index([date])
+  @@index([recipeUri])
+}
